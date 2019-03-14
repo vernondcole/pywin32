@@ -5,8 +5,8 @@
 # see https://stackoverflow.com/questions/12270453/ms-access-db-engine-32-bit-with-office-64-bit
 #
 AceRedist_32:
-  latest:
-    full_name: 'Microsoft Access database engine 2007 (English)'
+  '12.0.4518.1031':
+    full_name: 'Microsoft Office Access database engine 2007 (English)'
     installer: 'http://shares.digvil.info/AceRedist_32_hacked.msi'
     install_flags: '/quiet /norestart /passive'
     uninstaller: 'http://shares.digvil.info/AceRedist_32_hacked.msi'

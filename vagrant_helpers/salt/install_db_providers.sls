@@ -1,6 +1,8 @@
 ---
 # Salt state for installing the chocolatey installation tool
 #
+include:  {# ensure that the definitions are present #}
+  - local_windows_repository
 
 pkg.refresh_db_pr:
 {# Assumes that you ran salt_master.local_windows_repository on the Master #}
