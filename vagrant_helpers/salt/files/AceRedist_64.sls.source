@@ -1,0 +1,15 @@
+---
+# Salt state for letting Windows find database providers
+#
+# The URL below has a provider patched to work against Click-To-Install Office installations
+# see https://stackoverflow.com/questions/12270453/ms-access-db-engine-32-bit-with-office-64-bit
+#
+AceRedist_64:
+  latest:
+    full_name: 'Microsoft Access database engine 2007 (English)'
+    installer: 'http://shares.digvil.info/AceRedist_64_hacked.msi'
+    install_flags: '/quiet /norestart /passive'
+    uninstaller: 'http://shares.digvil.info/AceRedist_64_hacked.msi'
+    uninstall_flags: '/quiet /norestart'
+    msiexec: True
+...

@@ -11,21 +11,19 @@ require "ipaddr"
 vagrant_command = ARGV[0]
 vagrant_object = ARGV.length > 1 ? ARGV[1] : ""  # the name (if any) of the vagrant VM for this command
 #
-  settings = {"bevy" => "local",
-  "vagrant_prefix" => '172.17',
-  "vagrant_interface_guess" => "eth0",
-   "master_vagrant_ip" => 'localhost',
+  settings = {"bevy" => "local",  # change this name if more than one VM host will use the same local IP network
+  "vagrant_prefix" => '172.17',   # the first two octets for your host-only and NAT networks
+  "vagrant_interface_guess" => "eth0",  # name of your bridging network adapter. Will prompt if not guessed correctly
+   "master_vagrant_ip" => 'localhost',  # address of Salt master server. "localhost" for masterless
    "my_windows_user" => 'vagrant',
    "my_windows_password" => 'vagrant',
    "fqdn_pattern" => '{}.{}.test',
-   "force_linux_user_password" => false,
-   "WINDOWS_GUEST_CONFIG_FILE" => 'configure_machine/masterless_minion.conf',
+   "WINDOWS_GUEST_CONFIG_FILE" => 'vagrant_helpers/masterless_minion.conf',
    }
   default_run_highstate = false
 
 # .
 BEVY = settings["bevy"]  # the name of your bevy
-# the first two bytes of your Vagrant host-only network IP such as ("192.168.x.x")
 NETWORK = "#{settings['vagrant_prefix']}"
 # ^ ^ each VM below will have a NAT network in NETWORK.17.x/27.
 puts "Your bevy name:#{BEVY} using local network #{NETWORK}.x.x"
@@ -65,7 +63,7 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
   config.vm.define "test1", primary: true do |quail_config|  # this will be the default machine for "vagrant up"
     quail_config.vm.box = "StefanScherer/windows_10"
     # <#this causes Windows to restart#> # quail_config.vm.hostname = 'test1'
-    quail_config.vm.network "private_network", ip: NETWORK + ".2.201"  # needed so saltify_profiles.conf can find this unit
+    quail_config.vm.network "private_network", ip: NETWORK + ".2.200"  # needed so saltify_profiles.conf can find this unit
     if vagrant_command == "up" and (ARGV.length == 1 or (vagrant_object == "test1"))
       puts "Starting 'test1' at #{NETWORK}.2.201..."
     end
@@ -77,7 +75,7 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
         v.memory = 4096
         v.cpus = max_cpus
         v.linked_clone = true # make a soft copy of the base Vagrant box
-        v.customize ["modifyvm", :id, "--natnet1", NETWORK + ".17.0/27"]  # do not use 10.0 network for NAT
+        v.customize ["modifyvm", :id, "--natnet1", NETWORK + ".17.128/27"]  # do not use 10.0 network for NAT
 	    #                                                     ^  ^/27 is the smallest network allowed.
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]  # use host's DNS resolver
         v.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", "emptydrive"]

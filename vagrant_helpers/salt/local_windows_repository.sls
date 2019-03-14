@@ -10,8 +10,10 @@ c:/srv/salt/win/repo-ng:
   file.directory:
     - makedirs: true
 
-{# -- NOTE -- no jinja is used here. The jinja template is expanded on the minion only. #}
-# Sample: use a local definition to find Notepad++
+{# -- NOTE -- no jinja is used in loading the managed files.
+  The (.source) jinja template is expanded on the minion only. #}
+
+#use a local definition to find Notepad++
 /srv/salt/win/repo-ng/npp.sls:
   file.managed:
     - source: salt://{{ slspath }}/files/npp.sls.source
@@ -23,4 +25,13 @@ c:/srv/salt/win/repo-ng:
 /srv/salt/win/repo-ng/VCforPython27.sls:
   file.managed:
     - source: salt://{{ slspath }}/files/VCforPython27.sls.source
+
+# these versions of AceRedist have been altered to load correctly on a machine which
+# has had a click-to-buy copy of Microsoft Office installed.
+/srv/salt/win/repo-ng/AceRedist_32.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/AceRedist_32.sls.source
+/srv/salt/win/repo-ng/AceRedist_64.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/AceRedist_64.sls.source
 ...

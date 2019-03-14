@@ -1,0 +1,14 @@
+---
+# Salt state for letting Windows find database providers
+#
+# The URL below is the "direct download" link from 'https://www.microsoft.com/download/details.aspx?id=44266'
+#
+AceRedist_64:
+  latest:
+    full_name: 'Microsoft Access database engine 2010 (English)'
+    installer: 'http://shares.digvil.info/AceRedist_64_hacked.msi'
+    install_flags: '/quiet /norestart /passive'
+    uninstaller: 'http://shares.digvil.info/AceRedist_64_hacked.msi'
+    uninstall_flags: '/quiet /norestart'
+    msiexec: True
+...
