@@ -12,7 +12,6 @@ mono_install:
   pkg.installed:
     - names:
       - mono-complete
-      - nuget
 
 {% else %} {# Windows #}
 
@@ -20,11 +19,11 @@ mono_install:
 include:
   - .local_windows_repository
   - .install_chocolatey
+  - .vc4python
   - .vs{{ vs_version }}_build_tools
 
-nuget:
-  chocolatey.installed:
-    - name: nuget.commandline
+install_dotnet35:
+  test.fail_without_changes
 
 windows-sdk-8.1:
   chocolatey.installed:
