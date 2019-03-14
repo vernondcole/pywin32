@@ -18,12 +18,14 @@ mono_install:
 {% set vs_version = '2017' %}
 include:
   - .local_windows_repository
-  - .install_chocolatey
+  - .install_test_framework
   - .vc4python
   - .vs{{ vs_version }}_build_tools
 
 install_dotnet35:
-  test.fail_without_changes
+  test.succeed_with_changes:
+    - name: There is no way I can find to install this package on a modern Windows version. Do we really need it?
+    - order: last
 
 windows-sdk-8.1:
   chocolatey.installed:

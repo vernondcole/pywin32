@@ -8,6 +8,8 @@
 require "etc"
 require "ipaddr"
 
+# virtual machines defined below are intended to be compatible with http://github.com/salt-bevy/salt-bevy installations
+
 vagrant_command = ARGV[0]
 vagrant_object = ARGV.length > 1 ? ARGV[1] : ""  # the name (if any) of the vagrant VM for this command
 #
@@ -17,17 +19,15 @@ vagrant_object = ARGV.length > 1 ? ARGV[1] : ""  # the name (if any) of the vagr
    "master_vagrant_ip" => 'localhost',  # address of Salt master server. "localhost" for masterless
    "my_windows_user" => 'vagrant',
    "my_windows_password" => 'vagrant',
-   "fqdn_pattern" => '{}.{}.test',
    "WINDOWS_GUEST_CONFIG_FILE" => 'vagrant_helpers/masterless_minion.conf',
-   "windows_bootstrap_options" => '-runservice false'
+   "windows_bootstrap_options" => '-runservice false'  # with no master, it is pointless to run salt-minion as a service
    }
-  default_run_highstate = false
-
+  default_run_highstate = true
 # .
 BEVY = settings["bevy"]  # the name of your bevy
 NETWORK = "#{settings['vagrant_prefix']}"
 # ^ ^ each VM below will have a NAT network in NETWORK.17.x/27.
-puts "Your bevy name:#{BEVY} using local network #{NETWORK}.x.x"
+puts "Your bevy name:#{BEVY} with host-only network #{NETWORK}.x.x"
 puts "This (the VM host) computer will be at #{NETWORK}.2.1" if ARGV[1] == "up"
 bevy_mac = (BEVY.to_i(36) % 0x1000000).to_s(16)  # a MAC address based on hash of BEVY
 # in Python that would be: bevy_mac = format(int(BEVY, base=36) % 0x1000000, 'x')

@@ -12,16 +12,6 @@ c:/srv/salt/win/repo-ng:
 
 {# -- NOTE -- no jinja is used in loading the managed files.
   The (.source) jinja template is expanded on the minion only. #}
-
-#use a local definition to find Notepad++
-/srv/salt/win/repo-ng/npp.sls:
-  file.managed:
-    - source: salt://{{ slspath }}/files/npp.sls.source
-
-/srv/salt/win/repo-ng/git.sls:
-  file.managed:
-    - source: salt://{{ slspath }}/files/git.sls.source
-
 /srv/salt/win/repo-ng/VCforPython27.sls:
   file.managed:
     - source: salt://{{ slspath }}/files/VCforPython27.sls.source

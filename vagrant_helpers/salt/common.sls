@@ -3,37 +3,17 @@
 # this is an example of things you may always want installed. #}
 
 {% if grains['os_family'] == 'Windows' %}
-  {% if salt['config.get']('file_client','') == 'local' %}
 include:
-  - local_windows_repository
-  {% else %}
-restart-the-minion:
-  cmd.run:
-    - bg: true  # do not wait for completion of this command
-    - order: last
-    - name: '{{ salt['environ.get']('SALTDIR') }}\salt-call.bat service.restart salt-minion'
-  {% endif %}
-
-pkg.refresh_db:
-  module.run:
-  - require_in:
-    - pkg: windows_packages
-windows_packages:
-{# Assumes that you ran salt_master.local_windows_repository on the Master #}
-  pkg.installed:
-    - pkgs:
-      - npp
-      - git
-
-choco_boot:
-  cmd.run:
-    - name: {{ salt['environ.get']('SALTDIR') }}\salt-call.bat chocolatey.bootstrap
-    - require_in:
-      - windows_py3
+  - install_chocolatey
 
 windows_py3:
   chocolatey.installed:
-    - name: python3
+    - names:
+      - python3
+      - notepadplusplus
+      - git
+    - require:
+      - cmd: install_chocolatey
 
 windows_pygit2_failure_workaround:
    cmd.run:  # install in Salt's copy of Python
