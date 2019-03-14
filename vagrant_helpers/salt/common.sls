@@ -1,8 +1,19 @@
 ---
 # salt state file for all systems
-{# this is an example of things you may always want installed. #}
+# this is an example of things you may always want installed. #}
 
 {% if grains['os_family'] == 'Windows' %}
+  {% if salt['config.get']('file_client','') == 'local' %}
+include:
+  - local_windows_repository
+  {% else %}
+restart-the-minion:
+  cmd.run:
+    - bg: true  # do not wait for completion of this command
+    - order: last
+    - name: '{{ salt['environ.get']('SALTDIR') }}\salt-call.bat service.restart salt-minion'
+  {% endif %}
+
 pkg.refresh_db:
   module.run:
   - require_in:
@@ -16,7 +27,7 @@ windows_packages:
 
 choco_boot:
   cmd.run:
-    - name: salt-call chocolatey.bootstrap
+    - name: {{ salt['environ.get']('SALTDIR') }}\salt-call.bat chocolatey.bootstrap
     - require_in:
       - windows_py3
 
@@ -25,8 +36,8 @@ windows_py3:
     - name: python3
 
 windows_pygit2_failure_workaround:
-   cmd.run:
-     - name: c:\salt\bin\python -m pip install pygit2
+   cmd.run:  # install in Salt's copy of Python
+     - name: {{ salt['environ.get']('PYTHON') }} -m pip install pygit2
 
 {# Note: .sls files are interpreted on the Minion, so the environment variables are local to it #}
 {{ salt['environ.get']('SystemRoot') }}/edit.bat:  {# very dirty way to create an "edit" command for all users #}
@@ -35,8 +46,10 @@ windows_pygit2_failure_workaround:
       - '"{{ salt['environ.get']('ProgramFiles(x86)') }}\Notepad++\Notepad++.exe" %*'
     - unless:  {# do not install this if there is an existing "edit" command #}
       - where edit
+      - require:
+        - windows_packages
 
-    {{ salt['environ.get']('SystemRoot') }}/tail.bat:  {# very dirty way to create a "tail -f" command for all users #}
+{{ salt['environ.get']('SystemRoot') }}/tail.bat:  {# very dirty way to create a "tail -f" command for all users #}
   file.managed:
     - contents: |
         @ECHO OFF
@@ -48,11 +61,6 @@ windows_pygit2_failure_workaround:
     - unless:  {# do not install this if there is an existing "tail" command #}
       - where tail
 
-restart-the-minion:
-  cmd.run:
-    - bg: true  # do not wait for completion of this command
-    - order: last
-    - name: 'C:\salt\salt-call.bat service.restart salt-minion'
 {% endif %}  {# Windows #}
 
 {% if grains['os_family'] == 'Debian' %}

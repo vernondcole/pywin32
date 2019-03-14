@@ -19,6 +19,7 @@ vagrant_object = ARGV.length > 1 ? ARGV[1] : ""  # the name (if any) of the vagr
    "my_windows_password" => 'vagrant',
    "fqdn_pattern" => '{}.{}.test',
    "WINDOWS_GUEST_CONFIG_FILE" => 'vagrant_helpers/masterless_minion.conf',
+   "windows_bootstrap_options" => '-runservice false'
    }
   default_run_highstate = false
 
@@ -84,6 +85,60 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
     quail_config.vm.boot_timeout = 900
     quail_config.vm.graceful_halt_timeout = 90
   end
+
+  # . . . . . . . . . . . . Define machine QUAIL1 . . . . . . . . . . . . . .
+  # This Ubuntu machine has a Salt minion installed, but no provisioning beyond the simplest.
+  config.vm.define "quail1", primary: false do |quail_config|
+    quail_config.vm.box = "ubuntu/bionic64"
+    quail_config.vm.hostname = "quail1"
+    quail_config.vm.network "private_network", ip: NETWORK + ".2.201"
+    if vagrant_command == "up" and vagrant_object == "quail1"
+      puts "Starting 'quail1' at #{NETWORK}.2.201..."
+      end
+    quail_config.vm.network "public_network", bridge: interface_guesses
+    quail_config.vm.provider "virtualbox" do |v|  # only for VirtualBox boxes
+        v.name = BEVY + '_quail1'  # ! N.O.T.E.: name must be unique
+        v.memory = 1024       # limit memory for the virtual box
+        v.cpus = 1
+        v.linked_clone = true # make a soft copy of the base Vagrant box
+        v.customize ["modifyvm", :id, "--natnet1", NETWORK + ".17.0/27"]  # do not use 10.0 network for NAT
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]  # use host's DNS resolver
+    end
+  end
+
+# . . . . . . .  Define quail2 with Salt minion installed . . . . . . . . . . . . . .
+# . this machine bootstraps Salt and loads database servers.
+# . Its master is "bevymaster".
+  config.vm.define "quail2", autostart: false do |quail_config|
+    quail_config.vm.box = "ubuntu/bionic64"
+    quail_config.vm.hostname = "quail2"
+    quail_config.vm.network "private_network", ip: NETWORK + ".2.202"
+    if vagrant_command == "up" and vagrant_object == "quail2"
+      puts "Starting #{vagrant_object} at #{NETWORK}.2.202 as a Salt minion with master=#{settings['master_vagrant_ip']}...\n."
+      end
+    quail_config.vm.network "public_network", bridge: interface_guesses
+    quail_config.vm.provider "virtualbox" do |v|
+        v.name = BEVY + '_quail2'  # ! N.O.T.E.: name must be unique
+        v.memory = 4000       # limit memory for the virtual box
+        v.cpus = max_cpus
+        v.linked_clone = true # make a soft copy of the base Vagrant box
+        v.customize ["modifyvm", :id, "--natnet1", NETWORK + ".17.160/27"]  # do not use 10.0 network for NAT
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]  # use host's DNS resolver
+    end
+    script = "mkdir -p /etc/salt/minion.d\n"
+    script += "chown -R vagrant:staff /etc/salt/minion.d\n"
+    script += "chmod -R 775 /etc/salt/minion.d\n"
+    quail_config.vm.provision "shell", inline: script
+    if settings.has_key?('GUEST_MINION_CONFIG_FILE') and File.exist?(settings['GUEST_MINION_CONFIG_FILE'])
+      quail_config.vm.provision "file", source: settings['GUEST_MINION_CONFIG_FILE'], destination: "/etc/salt/minion.d/00_vagrant_boot.conf"
+      end
+    quail_config.vm.provision :salt do |salt|
+       salt.verbose = false
+       salt.bootstrap_options = "-A #{settings['master_vagrant_ip']} -i quail2 -F -P"
+       salt.run_highstate = default_run_highstate
+    end
+  end
+
   # . . . . . . . . . . . . Define machine win10 . . . . . . . . . . . . . .
   # . this Windows 10 machine bootstraps Salt.
   config.vm.define "win10", autostart: false do |quail_config|
@@ -122,6 +177,7 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
         #salt.log_level = "info"
         salt.verbose = false
         salt.colorize = true
+        salt.bootstrap_options = "#{settings['windows_bootstrap_options']}"
         salt.run_highstate = default_run_highstate
     end
   end
@@ -161,6 +217,7 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
         salt.log_level = "info"
         salt.verbose = true
         salt.colorize = true
+        salt.bootstrap_options = "#{settings['windows_bootstrap_options']}"
         salt.run_highstate = default_run_highstate
     end
   end
@@ -197,6 +254,7 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
           salt.log_level = "info"
           salt.verbose = true
           salt.colorize = true
+          salt.bootstrap_options = "#{settings['windows_bootstrap_options']}"
           salt.run_highstate = false  # Vagrant may stall trying to run Highstate for this minion.
       end
     end

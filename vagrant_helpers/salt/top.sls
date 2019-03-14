@@ -5,4 +5,5 @@ base:
     - common
 
   'win1*':
-    - install_chocolatey
+    - local_windows_repository
+
