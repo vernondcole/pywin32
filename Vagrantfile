@@ -19,9 +19,11 @@ vagrant_object = ARGV.length > 1 ? ARGV[1] : ""  # the name (if any) of the vagr
    "master_vagrant_ip" => 'localhost',  # address of Salt master server. "localhost" for masterless
    "my_windows_user" => 'vagrant',
    "my_windows_password" => 'vagrant',
-   "WINDOWS_GUEST_CONFIG_FILE" => 'vagrant_helpers/masterless_minion.conf',
+   "WINDOWS_GUEST_CONFIG_FILE" => 'bootstrap_helpers/masterless_minion.conf',
+   "GUEST_MINION_CONFIG_FILE" => 'bootstrap_helpers/masterless_linux.conf',
    "windows_bootstrap_options" => '-runservice false'  # with no master, it is pointless to run salt-minion as a service
    }
+
   default_run_highstate = true
 # .
 BEVY = settings["bevy"]  # the name of your bevy
@@ -134,7 +136,7 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
       end
     quail_config.vm.provision :salt do |salt|
        salt.verbose = false
-       salt.bootstrap_options = "-A #{settings['master_vagrant_ip']} -i quail2 -F -P"
+       salt.bootstrap_options = "-A #{settings['master_vagrant_ip']} -i quail2 -F -P -X"
        salt.run_highstate = default_run_highstate
     end
   end

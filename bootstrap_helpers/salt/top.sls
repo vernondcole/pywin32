@@ -4,6 +4,4 @@ base:
   '*':
     - common
 
-  'win1*':
-    - local_windows_repository
 

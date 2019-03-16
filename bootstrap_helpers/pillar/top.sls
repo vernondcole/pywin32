@@ -8,7 +8,7 @@
 # Masterless minions are expected to be run with an /etc/salt/minion configuration like:
 # pillar_root:
 #   - /srv/pillar
-#   - /vagrant/vagrant_helpers/pillar
+#   - /vagrant/bootstrap_helpers/pillar
 #
 # make local modifications in /srv/pillar/???
 #
