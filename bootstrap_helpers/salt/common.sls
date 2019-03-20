@@ -23,7 +23,7 @@ windows_pygit2_failure_workaround:
 {{ salt['environ.get']('SystemRoot') }}/edit.bat:  {# very dirty way to create an "edit" command for all users #}
   file.managed:
     - contents:
-      - '"{{ salt['environ.get']('ProgramFiles(x86)') }}\Notepad++\Notepad++.exe" %*'
+      - '"{{ salt['environ.get']('ProgramFiles') }}\Notepad++\Notepad++.exe" %*'
     - unless:  {# do not install this if there is an existing "edit" command #}
       - where edit
       - require:
