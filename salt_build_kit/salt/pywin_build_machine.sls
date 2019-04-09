@@ -19,7 +19,7 @@ mono_install:
 include:
   - .install_dotnet35
   - .local_windows_repository
-  - .install_test_framework
+  - .install_python_versions
   - .vc4python
   - .vs{{ vs_version }}_build_tools
 

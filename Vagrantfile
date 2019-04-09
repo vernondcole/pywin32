@@ -19,8 +19,8 @@ vagrant_object = ARGV.length > 1 ? ARGV[1] : ""  # the name (if any) of the vagr
    "master_vagrant_ip" => 'localhost',  # address of Salt master server. "localhost" for masterless
    "my_windows_user" => 'vagrant',
    "my_windows_password" => 'vagrant',
-   "WINDOWS_GUEST_CONFIG_FILE" => 'bootstrap_helpers/masterless_minion.conf',
-   "GUEST_MINION_CONFIG_FILE" => 'bootstrap_helpers/masterless_linux.conf',
+   "WINDOWS_GUEST_CONFIG_FILE" => 'salt_build_kit/masterless_minion.conf',
+   "GUEST_MINION_CONFIG_FILE" => 'salt_build_kit/masterless_linux.conf',
    "windows_bootstrap_options" => '-runservice false'  # with no master, it is pointless to run salt-minion as a service
    }
 
@@ -260,4 +260,42 @@ Vagrant.configure(2) do |config|  # the literal "2" is required.
           salt.run_highstate = false  # Vagrant may stall trying to run Highstate for this minion.
       end
     end
+  # . . . . . . . . . . . . Define machine win81 . . . . . . . . . . . . . .
+   # . this machine installs Salt on a Windows 8.1 machine.
+    config.vm.define "win81", autostart: false do |quail_config|
+      quail_config.vm.box = "inclusivedesign/windows81-eval-x64"
+      quail_config.vm.network "public_network", bridge: interface_guesses
+      quail_config.vm.network "private_network", ip: NETWORK + ".2.81"
+      if vagrant_command == "up" and vagrant_object == "win81"
+        puts "Starting #{vagrant_object} as a Salt minion of #{settings['master_vagrant_ip']}."
+        puts "NOTE: you may need to hit <Ctrl C> after starting this Windows minion."
+        end
+      quail_config.vm.provider "virtualbox" do |v|
+          v.name = BEVY + '_win81'  # ! N.O.T.E.: name must be unique
+          v.gui = true  # turn on the graphic window
+          v.linked_clone = true
+          v.customize ["modifyvm", :id, "--vram", "27"]  # enough video memory for full screen
+          v.memory = 4096
+          v.cpus = max_cpus
+          v.customize ["modifyvm", :id, "--natnet1", NETWORK + ".17.64/27"]  # do not use 10.0 network for NAT
+          v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]  # use host's DNS resolver
+      end
+      quail_config.vm.guest = :windows
+      quail_config.vm.boot_timeout = 300
+      quail_config.vm.graceful_halt_timeout = 60
+      if settings.has_key?('WINDOWS_GUEST_CONFIG_FILE') and File.exist?(settings['WINDOWS_GUEST_CONFIG_FILE'])
+        quail_config.vm.provision "file", source: settings['WINDOWS_GUEST_CONFIG_FILE'], destination: "c:\\salt\\conf\\minion.d\\00_vagrant_boot.conf"
+        end
+      quail_config.vm.provision :salt do |salt|
+          salt.minion_id = "win81"
+          salt.master_id = "#{settings['master_vagrant_ip']}"
+          salt.log_level = "info"
+          salt.verbose = true
+          salt.colorize = true
+          salt.bootstrap_options = "#{settings['windows_bootstrap_options']}"
+          salt.run_highstate = false  # Vagrant may stall trying to run Highstate for this minion.
+      end
+    end
+
+
 end

@@ -1,5 +1,5 @@
 ---
-# Salt state for installing the chocolatey installation tool
+# Salt state for installing Python 2, etc
 #
 include:  {# ensure that the definitions are present #}
   - local_windows_repository
@@ -12,4 +12,4 @@ python2_x86:
 python2:
   chocolatey.installed:
     - name: python2
-
+    - install_args: install-directory=c:\python27_64
