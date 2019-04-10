@@ -1,16 +1,8 @@
 ---
-# Salt state for installing the chocolatey installation tool
+# Salt state for installing Windows database providers and/or drivers
 #
 include:  {# ensure that the definitions are present #}
   - local_windows_repository
-
-pkg.refresh_db_pr:
-{# Assumes that you ran salt_master.local_windows_repository on the Master #}
-  module.run:
-    - name: pkg.refresh_db
-    - require_in:
-      - pkg: AceRedist_32
-      - pkg: AceRedist_64
 
 AceRedist_32:
   pkg.installed

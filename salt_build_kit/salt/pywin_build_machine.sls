@@ -20,12 +20,9 @@ include:
   - .install_dotnet35
   - .local_windows_repository
   - .install_python_versions
+  - .install_win81_sdk
   - .vc4python
   - .vs{{ vs_version }}_build_tools
 
-
-windows-sdk-8.1:
-  chocolatey.installed:
-    - name: windows-sdk-8.1
 {% endif %} {# Windows #}
 ...

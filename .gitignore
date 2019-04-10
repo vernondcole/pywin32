@@ -65,4 +65,4 @@ venv.bak/
 # other IDEs, MacOS, etc
 .idea/
 .DS_Store
-bootstrap_helpers/bootstrap-salt.ps1
+salt_build_kit/_btss.ps1

@@ -74,9 +74,9 @@ For example:
 
 `vagrant winrm win10 -c "dir c:/vagrant"`
 
-`vagrant winrm test1 -c /vagrant/bootstrap_helpers/install_python.bat`
+`vagrant winrm test1 -c /vagrant/salt_build_kit/install_python3.bat`
 
-`vagrant winrm test1 -c /vagrant/bootstrap_helpers/bootstrap_salt.bat`
+`vagrant winrm test1 -c /vagrant/salt_build_kit/bootstrap_salt.bat`
 
 Send [salt module](https://docs.saltstack.com/en/latest/ref/modules/all/index.html) commands
 by using `salt-call`, for example:

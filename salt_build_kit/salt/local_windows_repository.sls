@@ -28,4 +28,8 @@ c:/srv/salt/win/repo-ng:
 /srv/salt/win/repo-ng/AceRedist_64.sls:
   file.managed:
     - source: salt://{{ slspath }}/files/AceRedist_64.sls.source
+
+pkg.refresh_db:
+  module.run:
+    - name: pkg.refresh_db
 ...
