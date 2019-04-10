@@ -12,4 +12,27 @@ python2_x86:
 python2:
   chocolatey.installed:
     - name: python2
-    - install_args: install-directory=c:\python27_64
+
+python35_x86:
+  pkg.installed:
+    - force_x6: True
+
+python35:
+  pkg.installed
+
+python36:
+  pkg.installed
+
+python36_x86:
+  pkg.installed:
+    - force_x6: True
+
+python37_x86:
+  pkg.installed:
+    - force_x6: True
+
+python37:
+  chocolatey.installed:
+    - name: python
+    - install_args:
+      - side_by_side

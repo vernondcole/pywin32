@@ -1,6 +1,6 @@
 {# downloaded from https://github.com/saltstack/salt-winrepo-ng/blob/master/python2_x86.sls 13-3-2019 #}
 python2_x86:
-  {% for minor in range(1, 16) %}  {# TODO: update this line for new versions of Python2 #}
+  {% for minor in range(1, 17) %}  {# TODO: update this line for new versions of Python2 #}
   {% set version = '2.7.' ~ minor %}
   {% set full_version = version ~ '150' %}
 

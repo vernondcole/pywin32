@@ -1,0 +1,12 @@
+python36_x86:
+  {% for minor in range(1, 9) %}  {# TODO: update this line for new versions of Python 3,6 #}
+  {% set version = '3.6.' ~ minor %}
+  {% set full_version = version ~ '150' %}
+
+  '{{ full_version }}':
+    full_name: 'Python {{ version }} Core Interpreter (32-bit)'
+    installer: 'https://www.python.org/ftp/python/{{ version }}/python-{{ version }}.exe'
+    install_flags: '/quiet InstallAllUsers=1 Include_tcltk=0 Include-launcher=0 Include_doc=0 Target_dir=C:\python36_32'
+    uninstaller: 'https://www.python.org/ftp/python/{{ version }}/python-{{ version }}.exe'
+    uninstall_flags: '/uninstall'
+{% endfor %}

@@ -20,6 +20,26 @@ c:/srv/salt/win/repo-ng:
   file.managed:
     - source: salt://{{ slspath }}/files/python2_x86.sls.source
 
+/srv/salt/win/repo-ng/python35.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/python35.sls.source
+
+/srv/salt/win/repo-ng/python35_x86.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/python35_x86.sls.source
+
+/srv/salt/win/repo-ng/python36.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/python36.sls.source
+
+/srv/salt/win/repo-ng/python36_x86.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/python36_x86.sls.source
+
+/srv/salt/win/repo-ng/python37_x86.sls:
+  file.managed:
+    - source: salt://{{ slspath }}/files/python37_x86.sls.source
+
 # these versions of AceRedist have been altered to load correctly on a machine which
 # has had a click-to-buy copy of Microsoft Office installed.
 /srv/salt/win/repo-ng/AceRedist_32.sls:
