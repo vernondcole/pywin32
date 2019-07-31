@@ -1,21 +1,51 @@
 # Using Vagrant VMs to Build and Test PyWin32
 
-This sub-directory provides for semi-automatically configuring a machines 
+This sub-directory provides for semi-automatically configuring machines 
 capable of building a PyWin32 distribution. 
 This can be done using any modern operating system. 
 (This subsystem was developed using macOS Mojave.)
 
 ### How to run Vagrant Virtual Machines on your workstation.
 
-- Install [git](https://git-scm.com/downloads) on your workstation
+- open a `cmd` command shell as an Administrator
 
-- Install [Vagrant](vagrantup.com) on your workstation.
+- using that shell, execute the following script to install [chocolatey](https://chocolatey.org/).
 
-- Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on your workstation.
+`@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"`
+ 
+- exit from that command shell, and open a new Administrator command shell. (This one will recognize the `choco` command.) 
 
-- Clone [this repository](https://github.com/mhammond/pywin32.git) onto your workstation.
+- Install [git](https://git-scm.com/downloads) on your workstation. 
+
+`git --version || choco install git`
+
+- Install [Vagrant](vagrantup.com) on your workstation. 
+
+`vagrant --version || choco install vagrant`
+
+- Install [VirtualBox](https://www.virtualbox.org) on your workstation. 
+
+`vboxmanage --version || choco install virtualbox`
+
+- Install [Python3](https://python.org) and pywin32.
+
+```
+py -3 --version || choco install python3
+py -3 -m pip install pywin32 pyyaml ifaddr passlib
+```
+
+- exit from the Administrator shell
+
+
+- If you have not done so already, clone [this repository](https://github.com/mhammond/pywin32) onto your workstation.
 
 `git clone https://github.com/mhammond/pywin32.git`
+
+- clone the [salt-bevy](https://github.com/salt-bevy/salt-bevy)
+repo beside this (pywin32) repo. That location contains your Vagrant setup
+and is expected by some shell commands.
+
+`git clone https://github.com/salt-bevy/salt-bevy.git`
 
 - Switch your current working directory to the pywin32 working set.
 
@@ -23,13 +53,14 @@ This can be done using any modern operating system.
 
 - Run and control virtual machines as needed.
 
-`vagrant help`
+`vgr help`
 
-`vagrant up win16`
+`vgr up win10`
 
-`vagrant status`
+`vgr status`
 
-`vagrant destroy win16`
+`vagrant destroy win10`
+
 
 ##### About the supplied virtual machines.
 
@@ -50,7 +81,7 @@ Your source code (the pywin32 repository working set) will appear as the
 `C:\vagrant` folder on each VM. This is a virtual directory (not a copy) so any edits
 made on your workstation (as with an IDE) instantly appear on the VM, and vice versa.
 
-- `test1` an empty machine (with no [salt](https://www.saltstack.com/) code) 
+- `test1` an empty Windows 10 machine (with no [salt](https://www.saltstack.com/) code) 
 suitable for testing installation of a newly packaged distribution.
 This is the default machine, which you will get if you type `vagrant up`
 without specifying a machine name. 
