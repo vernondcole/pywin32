@@ -108,7 +108,7 @@ if doSqlServerTest:
         'host': 'testsql.2txt.us',  # default value, may be changed below
         'database': "adotest",
         'user' : 'adotestuser',   # None implies Windows security
-        'password' : "12345678",
+        'password' : "ADOtest1",
         # macro definition for keyword "security" using macro "auto_security"
         'macro_auto_security' : 'security',
         'provider' : 'SQLNCLI11; MARS Connection=True'
